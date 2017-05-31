@@ -35,15 +35,23 @@ class Star_Wars_VehiclesTests: XCTestCase {
     
     
     func testAPIRequests() {
-        let apiManager = APIManager()
-        apiManager.requestWith(url: "https://swapi.co/api/people") { (json) in
-            XCTAssertNotNil(json)
+        let vc = ViewController()
+        vc.requestVehicle(stringUrl: "s://swapi.co/api/vehicles/4") { (vehicle) in
+            XCTAssertEqual(vehicle.name, "Sand Crawler")
         }
     }
+
     
-    func testVehicleStruct() {
-        let vehicle = Vehicle(name: "vehicle")
-        XCTAssertEqual(vehicle.name, "vehicle")
+    func testVehicleStructInitWithJSON() {
+        let json: JSON = ["name":"Crawler"]
+        let crawler = Vehicle(json: json)
+        XCTAssertEqual(crawler?.name, "Crawler")
+    }
+    
+    func testVehicleFailableInit() {
+        let json = JSON()
+        let dummy = Vehicle(json: json)
+        XCTAssertEqual(dummy?.name, nil)
     }
     
     

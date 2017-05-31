@@ -9,12 +9,34 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    var vehicle: Vehicle? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        assignVehicle()
+        
     }
 
+}
+
+extension ViewController {
+    
+    func assignVehicle() {
+        let endpoint = "https://swapi.co/api/vehicles/4"
+        requestVehicle(stringUrl: endpoint) { (vehicle) in
+            self.vehicle = vehicle
+        }
+    }
+    
+    func requestVehicle(stringUrl: String, completion: @escaping (Vehicle) -> Void) {
+        APIManager.requestWith(url: stringUrl) { (json) in
+            guard let unwrappedJson = json else { return }
+            let newVehicle = Vehicle(json: unwrappedJson)
+            guard let unwrappedVehicle = newVehicle else { return }
+            completion(unwrappedVehicle)
+        }
+    }
 
 }
 
@@ -29,7 +51,7 @@ struct Vehicle {
 }
 
 class APIManager {
-    func requestWith(url: String, completion: @escaping ((JSON?) -> ())) {
+    class func requestWith(url: String, completion: @escaping ((JSON?) -> ())) {
         guard let validURL = URL(string: url) else { print(#function, "The url was not valid"); return }
         let dataTask = URLSession.shared
         dataTask.dataTask(with: validURL) { (dataResult, response, error) in
